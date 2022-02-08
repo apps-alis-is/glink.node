@@ -5,7 +5,7 @@ return {
     base = "__btc/ami.lua",
     commands = {
         info = {
-            action = '__monk/info.lua'
+            action = '__glink/info.lua'
         },
         setup = {
             options = {
@@ -42,7 +42,7 @@ return {
         },
         bootstrap = {
             description = "ami 'bootstrap' sub command",
-            summary = 'Bootstraps the MONK node',
+            summary = 'Bootstraps the GLINK node',
             action = '__glink/bootstrap.lua',
             contextFailExitCode = EXIT_APP_INTERNAL_ERROR
         },
