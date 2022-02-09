@@ -61,7 +61,7 @@ As You can see '22' appears in 'id' and 'rpcbind' IP. Of course each masternode 
 2. `ami --path=<your app path> remove` - removes app data only
 3. `ami --path=<your app path> start`
 
-##### Remove snowgemd database: 
+##### Remove gemlinkd database: 
 1. `ami --path=<your app path> stop`
 2. `ami --path=<your app path> removedb`
 3. `ami --path=<your app path> start`
