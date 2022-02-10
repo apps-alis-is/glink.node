@@ -96,7 +96,7 @@ local function _get_mn_status(_exitcode, _stdout, _stderr)
 end
 
 if _info.gemlinkd == "running" then
-    local _exitcode, _stdout, _stderr = _exec_glink_cli("getfreyjainfo")
+    local _exitcode, _stdout, _stderr = _exec_glink_cli("getamiinfo")
     local _success, _output = _get_glink_cli_result(_exitcode, _stdout, _stderr)
 
     _info.currentBlock = _success and _output.blocks or "unknown"
