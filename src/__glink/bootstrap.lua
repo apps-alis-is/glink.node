@@ -1,6 +1,6 @@
 local _tmpFile = os.tmpname()
-log_info("Dwonloading bootstrap...")
-local _ok, _error = net.safe_download_file("http://bc.gemlink.org/bc.zip", { progressFunction = (function ()
+log_info("Downloading bootstrap...")
+local _ok, _error = net.safe_download_file("http://bc.gemlink.org/bc.zip", _tmpFile, { progressFunction = (function ()
     local _lastWritten = 0
     return function(total, current) 
         local _progress = math.floor(current / total * 100)
@@ -11,7 +11,7 @@ local _ok, _error = net.safe_download_file("http://bc.gemlink.org/bc.zip", { pro
             if _progress == 100 then print() end
         end
     end
-end)()}, _tmpFile)
+end)()})
 if not _ok then
   os.remove(_tmpFile)
   ami_error("Failed to download bootstrap - " .. _error .. "!", EXIT_APP_DOWNLOAD_ERROR)
