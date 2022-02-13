@@ -1,7 +1,5 @@
 {
-    "id": "glink.node" ,
-    "version" : "0.0.5+4.0.0",
-    "dependencies": [
-        { "id":"btc.base" }
-    ]
+  "id": "glink.node",
+  "version": "0.0.6+4.0.0",
+  "dependencies": [{ "id": "btc.base" }]
 }
