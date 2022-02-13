@@ -23,4 +23,20 @@ if not _ok then
   ami_error("Failed to extract bootstrap - " .. _error .. "!", EXIT_APP_DOWNLOAD_ERROR)
 end
 
+log_success("Adjusting bootstrap owner.")
+
+local _user = am.app.get("user")
+ami_assert(type(_user) == "string", "User not specified...")
+
+local _ok, _uid = fs.safe_getuid(_user)
+ami_assert(_ok, "Failed to get " .. _user .. "uid - " .. (_uid or ""))
+
+local DATA_PATH = am.app.get_model("DATA_DIR")
+fs.safe_mkdirp(DATA_PATH)
+
+local _ok, _error = fs.safe_chown(DATA_PATH, _uid, _uid, { recurse = true })
+if not _ok then
+    ami_error("Failed to chown " .. DATA_PATH .. " - " .. (_error or ""))
+end
+
 log_success("Node successfully bootstrapped.")
