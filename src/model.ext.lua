@@ -1,6 +1,6 @@
 am.app.set_model(
     {
-        DAEMON_URL = "https://github.com/gemlink/gemlink/releases/download/v4.0.2/gemlink-ubuntu-4.0.2.zip",
+        DAEMON_URL = "https://github.com/gemlink/gemlink/releases/download/v4.0.3/gemlink-ubuntu-4.0.3.zip",
         DAEMON_CONFIGURATION = {
             server = (type(am.app.get_configuration("NODE_PRIVKEY") == "string") or am.app.get_configuration("SERVER")) and 1 or nil,
             listen = (type(am.app.get_configuration("NODE_PRIVKEY") == "string") or am.app.get_configuration("SERVER")) and 1 or nil,
