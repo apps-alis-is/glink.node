@@ -19,8 +19,6 @@ GEMLINK node AMI app.
             "bind": "aaa.bbb.ccc.ddd",
             "rpcbind": "127.0.0.22",
             "port": 16113,
-            "listen": 1,
-            "server": 1,
             "txindex": 1,
             "masternode": 1,
             "rpcallowip": "127.0.0.0/8",
