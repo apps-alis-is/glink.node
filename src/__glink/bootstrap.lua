@@ -16,15 +16,13 @@ if not _ok then
 	os.remove(_tmpFile)
 	ami_error("Failed to download bootstrap - " .. _error .. "!", EXIT_APP_DOWNLOAD_ERROR)
 end
+
 log_info("Extracting bootstrap...")
-local _ok = zip.safe_extract(_tmpFile, "data", { flattenRootDir = true })
-if not _ok then
-	os.remove(_tmpFile)
-	ami_error("Failed to extract bootstrap - " .. _error .. "!", EXIT_APP_DOWNLOAD_ERROR)
-end
+local _ok, _error = zip.safe_extract(_tmpFile, "data", { flattenRootDir = true })
+os.remove(_tmpFile)
+ami_assert(_ok, "Failed to extract bootstrap - " .. (_error or "") .. "!", EXIT_APP_DOWNLOAD_ERROR)
 
 log_info("Adjusting bootstrap owner.")
-
 local _user = am.app.get("user")
 ami_assert(type(_user) == "string", "User not specified...")
 
