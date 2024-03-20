@@ -12,8 +12,8 @@ am.app.set_model({
 	CONF_SOURCE = "__btc/assets/daemon.conf",
 	SERVICE_NAME = "gemlinkd",
 	ADD_NODES = {
-		15.235.142.201
-		193.25.2.237
+		"15.235.142.201",
+		"193.25.2.237"
 	 }
 },
 	{ merge = true, overwrite = true }
