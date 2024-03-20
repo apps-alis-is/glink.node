@@ -10,7 +10,7 @@ am.app.set_model({
 	CLI_NAME = "gemlink-cli",
 	CONF_NAME = "gemlink.conf",
 	CONF_SOURCE = "__btc/assets/daemon.conf",
-	SERVICE_NAME = "gemlinkd"
+	SERVICE_NAME = "gemlinkd",
 	ADD_NODES = {
 		15.235.142.201
 		193.25.2.237
