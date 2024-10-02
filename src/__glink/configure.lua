@@ -15,7 +15,8 @@ local DATA_PATH = am.app.get_model("DATA_DIR", "data")
 fs.safe_mkdirp(DATA_PATH)
 
 local _fetchScriptPath = "bin/fetch-params.sh"
-local _ok, _error = net.safe_download_file("https://raw.githubusercontent.com/gemlink/gemlink/master/zcutil/fetch-params.sh", _fetchScriptPath, { followRedirects = true })
+local _ok, _error = net.safe_download_file("https://raw.githubusercontent.com/gemlink/gemlink/master/zcutil/fetch-params.sh", _fetchScriptPath,
+	{ followRedirects = true })
 if not _ok then
 	log_error("Failed to download fetch-params.sh - " .. (_error or '-') .. "!")
 	return
@@ -27,7 +28,8 @@ if fs.exists(_fetchScriptPath) then -- we download only on debian
 		stdio = { stderr = "pipe" },
 		wait = true,
 		env = { HOME = _user == "root" and "/root" or "/home/" .. _user }
-	})
-	ami_assert(_proc.exitcode == 0, "Failed to fetch params: " .. _proc.stderrStream:read("a"))
+	}) --[[@as SpawnResult]]
+	local _stderr = _proc.stderrStream:read("a") or ""
+	ami_assert(_proc.exitcode == 0, "Failed to fetch params: " .. _stderr)
 	log_success("Sprout parameters downloaded...")
 end
