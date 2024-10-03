@@ -18,36 +18,43 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+
+      - name: setup eli
+        uses: alis-is/setup-eli@v1
 
       - name: Generate ID
         id: repository_info
         run: |
-          export ID=$(printf ${{github.repository}} | sed "s/.*\///g")
-          echo "::set-output name=ID::$ID"
+          eli .github/get-variables.lua >> $GITHUB_OUTPUT
 
       - name: Generate SHA256 and PACKAGE_SOURCE
         working-directory: src
         env:
           ID: ${{ steps.repository_info.outputs.ID }}
+          VERSION: ${{ steps.repository_info.outputs.VERSION }}
         run: |
-          zip ../$ID-${{github.ref_name}}.zip -r *
-  
+          zip ../$ID-$VERSION.zip -r *
+
       - name: Upload files to a GitHub release
         uses: svenstaro/upload-release-action@2.2.1
+        env:
+          ID: ${{ steps.repository_info.outputs.ID }}
+          VERSION: ${{ steps.repository_info.outputs.VERSION }}
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{github.ref}}
-          file: ${{ steps.repository_info.outputs.ID }}-${{github.ref_name}}.zip
-  
+          tag: $VERSION
+          file: $ID-$VERSION.zip
+
       - name: Generate SHA256 and PACKAGE_SOURCE
         id: release_info
         env:
           ID: ${{ steps.repository_info.outputs.ID }}
+          VERSION: ${{ steps.repository_info.outputs.VERSION }}
         run: |
-          export SHA256=$(sha256sum $ID-${{github.ref_name}}.zip | awk '{print $1}')
+          export SHA256=$(sha256sum $ID-$VERSION.zip | awk '{print $1}')
           echo "::set-output name=SHA256::$SHA256"
-          export PACKAGE_SOURCE=https://github.com/${{github.repository}}/releases/download/${{github.ref_name}}/$ID-${{github.ref_name}}.zip
+          export PACKAGE_SOURCE=https://github.com/${{github.repository}}/releases/download/$VERSION/$ID-$VERSION.zip
           echo "::set-output name=PACKAGE_SOURCE::$PACKAGE_SOURCE"
 
       - name: Air Repository Dispatch
@@ -57,7 +64,3 @@ jobs:
           repository: alis-is/air
           event-type: app-release
           client-payload: '{ "id": "${{ steps.repository_info.outputs.ID }}", "repository": "${{github.repository}}", "version": "${{github.ref_name}}", "package": "${{ steps.release_info.outputs.PACKAGE_SOURCE }}", "sha256": "${{ steps.release_info.outputs.SHA256 }}"}'
-      
-        
-          
-          
