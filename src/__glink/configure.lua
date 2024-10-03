@@ -30,8 +30,9 @@ if fs.exists(_fetchScriptPath) then -- we download only on debian
 		env = { HOME = _user == "root" and "/root" or "/home/" .. _user }
 	}) --[[@as SpawnResult]]
 
-	local _stderr = _proc.stderrStream:read("a") or ""
+
 	if _proc.exitcode ~= 0 then
+		local _stderr = _proc.stderrStream:read("a") or ""
 		ami_error("Failed to fetch params: " .. _stderr, _proc.exitcode)
 	end
 
