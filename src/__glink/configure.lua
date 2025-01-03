@@ -16,7 +16,7 @@ fs.safe_mkdirp(DATA_PATH)
 
 local _fetchScriptPath = "bin/fetch-params.sh"
 local _ok, _error = net.safe_download_file("https://raw.githubusercontent.com/gemlink/gemlink/master/zcutil/fetch-params.sh", _fetchScriptPath,
-	{ followRedirects = true })
+	{ follow_redirects = true })
 if not _ok then
 	log_error("Failed to download fetch-params.sh - " .. (_error or '-') .. "!")
 	return
@@ -31,9 +31,9 @@ if fs.exists(_fetchScriptPath) then -- we download only on debian
 	}) --[[@as SpawnResult]]
 
 
-	if _proc.exitcode ~= 0 then
-		local _stderr = _proc.stderrStream:read("a") or ""
-		ami_error("Failed to fetch params: " .. _stderr, _proc.exitcode)
+	if _proc.exit_code ~= 0 then
+		local _stderr = _proc.stderr_stream:read("a") or ""
+		ami_error("Failed to fetch params: " .. _stderr, _proc.exit_code)
 	end
 
 	log_success("Sprout parameters downloaded...")

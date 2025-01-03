@@ -26,14 +26,14 @@ local function _exec_glink_cli(...)
 	end
 	local _proc = proc.spawn("bin/gemlink-cli", _arg, { stdio = { stdout = "pipe", stderr = "pipe" }, wait = true })
 
-	local _exitcode = _proc.exitcode
-	local _stdout = _proc.stdoutStream:read("a") or ""
-	local _stderr = _proc.stderrStream:read("a") or ""
-	return _exitcode, _stdout, _stderr
+	local _exit_code = _proc.exit_code
+	local _stdout = _proc.stdout_stream:read("a") or ""
+	local _stderr = _proc.stderr_stream:read("a") or ""
+	return _exit_code, _stdout, _stderr
 end
 
-local function _get_glink_cli_result(exitcode, stdout, stderr)
-	if exitcode ~= 0 then
+local function _get_glink_cli_result(exit_code, stdout, stderr)
+	if exit_code ~= 0 then
 		local _errorInfo = stderr:match("error: (.*)")
 		local _ok, _output = hjson.safe_parse(_errorInfo)
 		if _ok then
@@ -49,8 +49,8 @@ local function _get_glink_cli_result(exitcode, stdout, stderr)
 	return false, { message = "unknown (internal error)" }
 end
 
-local function _get_sync_status(_exitcode, _stdout, _stderr)
-	local _success, _output = _get_glink_cli_result(_exitcode, _stdout, _stderr)
+local function _get_sync_status(_exit_code, _stdout, _stderr)
+	local _success, _output = _get_glink_cli_result(_exit_code, _stdout, _stderr)
 
 	if _success then
 		if _output.IsBlockchainSync == true then
@@ -73,10 +73,10 @@ local function _get_sync_status(_exitcode, _stdout, _stderr)
 		"Unknown error..."
 end
 
-local function _get_mn_status(_exitcode, _stdout, _stderr)
+local function _get_mn_status(_exit_code, _stdout, _stderr)
 	if am.app.get_configuration({ "DAEMON_CONFIGURATION", "masternode" }) == 1 then
 		if type(_stdout) ~= "string" then _stdout = "" end
-		local _, _output = _get_glink_cli_result(_exitcode, _stdout, _stderr)
+		local _, _output = _get_glink_cli_result(_exit_code, _stdout, _stderr)
 		local _mnStatus = _output.MasternodeStatus or "Failed to verify masternode status!"
 		if _mnStatus:match("Masternode successfully started") then
 			_info.status = _mnStatus
@@ -96,13 +96,13 @@ local function _get_mn_status(_exitcode, _stdout, _stderr)
 end
 
 if _info.gemlinkd == "running" then
-	local _exitcode, _stdout, _stderr = _exec_glink_cli("getamiinfo")
-	local _success, _output = _get_glink_cli_result(_exitcode, _stdout, _stderr)
+	local _exit_code, _stdout, _stderr = _exec_glink_cli("getamiinfo")
+	local _success, _output = _get_glink_cli_result(_exit_code, _stdout, _stderr)
 
 	_info.currentBlock = _success and _output.blocks or "unknown"
 	_info.currentBlockHash = _success and _output.bestblockhash or "unknown"
-	_get_sync_status(_exitcode, _stdout, _stderr)
-	_get_mn_status(_exitcode, _stdout, _stderr)
+	_get_sync_status(_exit_code, _stdout, _stderr)
+	_get_mn_status(_exit_code, _stdout, _stderr)
 else
 	_info.level = "error"
 	_info.status = "Node is not running!"

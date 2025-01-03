@@ -24,7 +24,7 @@ return {
 				end
 
 				if _noOptions or _options.app then
-					am.execute_extension("__btc/download-binaries.lua", { contextFailExitCode = EXIT_SETUP_ERROR })
+					am.execute_extension("__btc/download-binaries.lua", { context_fail_exit_code = EXIT_SETUP_ERROR })
 				end
 
 				if _noOptions and not _options["no-validate"] then
@@ -34,8 +34,8 @@ return {
 				if _noOptions or _options.configure then
 					am.app.render()
 
-					am.execute_extension("__btc/configure.lua", { contextFailExitCode = EXIT_APP_CONFIGURE_ERROR })
-					am.execute_extension("__glink/configure.lua", { contextFailExitCode = EXIT_APP_CONFIGURE_ERROR })
+					am.execute_extension("__btc/configure.lua", { context_fail_exit_code = EXIT_APP_CONFIGURE_ERROR })
+					am.execute_extension("__glink/configure.lua", { context_fail_exit_code = EXIT_APP_CONFIGURE_ERROR })
 				end
 				log_success("glink node setup complete.")
 			end
@@ -44,14 +44,14 @@ return {
 			description = "ami 'bootstrap' sub command",
 			summary = 'Bootstraps the GLINK node',
 			action = '__glink/bootstrap.lua',
-			contextFailExitCode = EXIT_APP_INTERNAL_ERROR
+			context_fail_exit_code = EXIT_APP_INTERNAL_ERROR
 		},
 		remove = {
 			index = 7,
 			action = function(_options, _, _, _cli)
 				if _options.all then
-					am.execute_extension("__btc/remove-all.lua", { contextFailExitCode = EXIT_RM_ERROR })
-					am.execute_extension("__glink/remove-all.lua", { contextFailExitCode = EXIT_RM_ERROR })
+					am.execute_extension("__btc/remove-all.lua", { context_fail_exit_code = EXIT_RM_ERROR })
+					am.execute_extension("__glink/remove-all.lua", { context_fail_exit_code = EXIT_RM_ERROR })
 					am.app.remove()
 					log_success("Application removed.")
 				else
