@@ -1,25 +1,27 @@
-local _tmpFile = os.tmpname()
+local _tmp_file = os.tmpname()
 log_info("Downloading bootstrap...")
-local _ok, _error = net.safe_download_file("http://bc.gemlink.org/bc.zip", _tmpFile, { progressFunction = (function()
-	local _lastWritten = 0
-	return function(total, current)
-		local _progress = math.floor(current / total * 100)
-		if math.fmod(_progress, 10) == 0 and _lastWritten ~= _progress then
-			_lastWritten = _progress
-			io.write(_progress .. "%...")
-			io.flush()
-			if _progress == 100 then print() end
+local _ok, _error = net.safe_download_file("http://bc.gemlink.org/bc.zip", _tmp_file, {
+	progress_function = (function()
+		local _last_written = 0
+		return function(total, current)
+			local _progress = math.floor(current / total * 100)
+			if math.fmod(_progress, 10) == 0 and _last_written ~= _progress then
+				_last_written = _progress
+				io.write(_progress .. "%...")
+				io.flush()
+				if _progress == 100 then print() end
+			end
 		end
-	end
-end)() })
+	end)()
+})
 if not _ok then
-	os.remove(_tmpFile)
+	os.remove(_tmp_file)
 	ami_error("Failed to download bootstrap - " .. _error .. "!", EXIT_APP_DOWNLOAD_ERROR)
 end
 
 log_info("Extracting bootstrap...")
-local _ok, _error = zip.safe_extract(_tmpFile, "data", { flattenRootDir = true })
-os.remove(_tmpFile)
+local _ok, _error = zip.safe_extract(_tmp_file, "data", { flatten_root_dir = true })
+os.remove(_tmp_file)
 ami_assert(_ok, "Failed to extract bootstrap - " .. (_error or "") .. "!", EXIT_APP_DOWNLOAD_ERROR)
 
 log_info("Adjusting bootstrap owner.")

@@ -14,17 +14,17 @@ end
 local DATA_PATH = am.app.get_model("DATA_DIR", "data")
 fs.safe_mkdirp(DATA_PATH)
 
-local _fetchScriptPath = "bin/fetch-params.sh"
-local _ok, _error = net.safe_download_file("https://raw.githubusercontent.com/gemlink/gemlink/master/zcutil/fetch-params.sh", _fetchScriptPath,
+local _fetch_script_path = "bin/fetch-params.sh"
+local _ok, _error = net.safe_download_file("https://raw.githubusercontent.com/gemlink/gemlink/master/zcutil/fetch-params.sh", _fetch_script_path,
 	{ follow_redirects = true })
 if not _ok then
 	log_error("Failed to download fetch-params.sh - " .. (_error or '-') .. "!")
 	return
 end
 
-if fs.exists(_fetchScriptPath) then -- we download only on debian
+if fs.exists(_fetch_script_path) then -- we download only on debian
 	log_info("Downloading params... (This may take few minutes.)")
-	local _proc = proc.spawn("/bin/bash", { _fetchScriptPath }, {
+	local _proc = proc.spawn("/bin/bash", { _fetch_script_path }, {
 		stdio = { stderr = "pipe" },
 		wait = true,
 		env = { HOME = _user == "root" and "/root" or "/home/" .. _user }

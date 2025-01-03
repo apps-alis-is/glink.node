@@ -1,7 +1,7 @@
-local _amiId = "GEMLINK node"
+local _ami_id = "GEMLINK node"
 
 return {
-	title = _amiId,
+	title = _ami_id,
 	base = "__btc/ami.lua",
 	commands = {
 		info = {
@@ -14,24 +14,24 @@ return {
 				}
 			},
 			action = function(_options, _, _, _)
-				local _noOptions = #table.keys(_options) == 0
-				if _noOptions or _options.environment then
+				local _no_options = #table.keys(_options) == 0
+				if _no_options or _options.environment then
 					am.app.prepare()
 				end
 
-				if _noOptions or not _options["no-validate"] then
+				if _no_options or not _options["no-validate"] then
 					am.execute("validate", { "--platform" })
 				end
 
-				if _noOptions or _options.app then
+				if _no_options or _options.app then
 					am.execute_extension("__btc/download-binaries.lua", { context_fail_exit_code = EXIT_SETUP_ERROR })
 				end
 
-				if _noOptions and not _options["no-validate"] then
+				if _no_options and not _options["no-validate"] then
 					am.execute("validate", { "--configuration" })
 				end
 
-				if _noOptions or _options.configure then
+				if _no_options or _options.configure then
 					am.app.render()
 
 					am.execute_extension("__btc/configure.lua", { context_fail_exit_code = EXIT_APP_CONFIGURE_ERROR })

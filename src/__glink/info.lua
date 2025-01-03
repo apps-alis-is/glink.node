@@ -4,9 +4,9 @@ local _ok, _systemctl = am.plugin.safe_get("systemctl")
 ami_assert(_ok, "Failed to load systemctl plugin", EXIT_PLUGIN_LOAD_ERROR)
 
 local _appId = am.app.get("id", "unknown")
-local _serviceName = am.app.get_model("SERVICE_NAME", "unknown")
-local _ok, _status, _started = _systemctl.safe_get_service_status(_appId .. "-" .. _serviceName)
-ami_assert(_ok, "Failed to get status of " .. _appId .. "-" .. _serviceName .. ".service " .. (_status or ""), EXIT_PLUGIN_EXEC_ERROR)
+local _service_name = am.app.get_model("SERVICE_NAME", "unknown")
+local _ok, _status, _started = _systemctl.safe_get_service_status(_appId .. "-" .. _service_name)
+ami_assert(_ok, "Failed to get status of " .. _appId .. "-" .. _service_name .. ".service " .. (_status or ""), EXIT_PLUGIN_EXEC_ERROR)
 
 local _info = {
 	gemlinkd = _status,
@@ -20,9 +20,9 @@ local _info = {
 
 local function _exec_glink_cli(...)
 	local _arg = { "-datadir=data", ... }
-	local _rpcBind = am.app.get_configuration({ "DAEMON_CONFIGURATION", "rpcbind" })
-	if type(_rpcBind) == "string" then
-		table.insert(_arg, 1, "-rpcconnect=" .. _rpcBind)
+	local _rpc_bind = am.app.get_configuration({ "DAEMON_CONFIGURATION", "rpcbind" })
+	if type(_rpc_bind) == "string" then
+		table.insert(_arg, 1, "-rpcconnect=" .. _rpc_bind)
 	end
 	local _proc = proc.spawn("bin/gemlink-cli", _arg, { stdio = { stdout = "pipe", stderr = "pipe" }, wait = true })
 
@@ -34,8 +34,8 @@ end
 
 local function _get_glink_cli_result(exit_code, stdout, stderr)
 	if exit_code ~= 0 then
-		local _errorInfo = stderr:match("error: (.*)")
-		local _ok, _output = hjson.safe_parse(_errorInfo)
+		local _error_info = stderr:match("error: (.*)")
+		local _ok, _output = hjson.safe_parse(_error_info)
 		if _ok then
 			return false, _output
 		end
@@ -77,19 +77,19 @@ local function _get_mn_status(_exit_code, _stdout, _stderr)
 	if am.app.get_configuration({ "DAEMON_CONFIGURATION", "masternode" }) == 1 then
 		if type(_stdout) ~= "string" then _stdout = "" end
 		local _, _output = _get_glink_cli_result(_exit_code, _stdout, _stderr)
-		local _mnStatus = _output.MasternodeStatus or "Failed to verify masternode status!"
-		if _mnStatus:match("Masternode successfully started") then
-			_info.status = _mnStatus
+		local _mn_status = _output.MasternodeStatus or "Failed to verify masternode status!"
+		if _mn_status:match("Masternode successfully started") then
+			_info.status = _mn_status
 			return
 		end
 
 		if type(_stderr) ~= "string" then _stderr = "" end
 
-		local _warnMsg = _mnStatus:match("Hot node, waiting for remote activation") or
-			_mnStatus:match("Node just started, not yet activated")
+		local _warn_msg = _mn_status:match("Hot node, waiting for remote activation") or
+			_mn_status:match("Node just started, not yet activated")
 
-		_info.level = _warnMsg and "warn" or "error"
-		_info.status = _mnStatus
+		_info.level = _warn_msg and "warn" or "error"
+		_info.status = _mn_status
 	else
 		_info.status = "GEMLINK node UP"
 	end
@@ -99,8 +99,8 @@ if _info.gemlinkd == "running" then
 	local _exit_code, _stdout, _stderr = _exec_glink_cli("getamiinfo")
 	local _success, _output = _get_glink_cli_result(_exit_code, _stdout, _stderr)
 
-	_info.currentBlock = _success and _output.blocks or "unknown"
-	_info.currentBlockHash = _success and _output.bestblockhash or "unknown"
+	_info.current_block = _success and _output.blocks or "unknown"
+	_info.current_block_hash = _success and _output.bestblockhash or "unknown"
 	_get_sync_status(_exit_code, _stdout, _stderr)
 	_get_mn_status(_exit_code, _stdout, _stderr)
 else
