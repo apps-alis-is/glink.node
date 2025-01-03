@@ -1,39 +1,39 @@
-local _user = am.app.get("user")
-ami_assert(type(_user) == "string", "User not specified...")
+local user = am.app.get("user")
+ami_assert(type(user) == "string", "User not specified...")
 
-local _ok, _apt = am.plugin.safe_get("apt")
-if not _ok then
+local ok, apt = am.plugin.safe_get("apt")
+if not ok then
 	log_warn("Failed to load apt plugin!")
 end
 
-local _ok, _, _, _error, _dep = _apt.install("libgomp1")
-if not _ok then
-	log_warn("Failed to install " .. (_dep or '-') .. "! - " .. _error)
+local ok, _, _, err, dep = apt.install("libgomp1")
+if not ok then
+	log_warn("Failed to install " .. (dep or '-') .. "! - " .. err)
 end
 
 local DATA_PATH = am.app.get_model("DATA_DIR", "data")
 fs.safe_mkdirp(DATA_PATH)
 
-local _fetch_script_path = "bin/fetch-params.sh"
-local _ok, _error = net.safe_download_file("https://raw.githubusercontent.com/gemlink/gemlink/master/zcutil/fetch-params.sh", _fetch_script_path,
+local fetch_script_path = "bin/fetch-params.sh"
+local ok, err = net.safe_download_file("https://raw.githubusercontent.com/gemlink/gemlink/master/zcutil/fetch-params.sh", fetch_script_path,
 	{ follow_redirects = true })
-if not _ok then
-	log_error("Failed to download fetch-params.sh - " .. (_error or '-') .. "!")
+if not ok then
+	log_error("Failed to download fetch-params.sh - " .. (err or '-') .. "!")
 	return
 end
 
-if fs.exists(_fetch_script_path) then -- we download only on debian
+if fs.exists(fetch_script_path) then -- we download only on debian
 	log_info("Downloading params... (This may take few minutes.)")
-	local _proc = proc.spawn("/bin/bash", { _fetch_script_path }, {
+	local proc = proc.spawn("/bin/bash", { fetch_script_path }, {
 		stdio = { stderr = "pipe" },
 		wait = true,
-		env = { HOME = _user == "root" and "/root" or "/home/" .. _user }
+		env = { HOME = user == "root" and "/root" or "/home/" .. user }
 	}) --[[@as SpawnResult]]
 
 
-	if _proc.exit_code ~= 0 then
-		local _stderr = _proc.stderr_stream:read("a") or ""
-		ami_error("Failed to fetch params: " .. _stderr, _proc.exit_code)
+	if proc.exit_code ~= 0 then
+		local stderr = proc.stderr_stream:read("a") or ""
+		ami_error("Failed to fetch params: " .. stderr, proc.exit_code)
 	end
 
 	log_success("Sprout parameters downloaded...")
