@@ -1,6 +1,7 @@
 local tmp_file = os.tmpname()
 log_info("Downloading bootstrap...")
 local ok, err = net.safe_download_file("https://bc.gemlink.org/download/bc.zip", tmp_file, {
+	follow_redirects = true,
 	progress_function = (function()
 		local last_written = 0
 		return function(total, current)
