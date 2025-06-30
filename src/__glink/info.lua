@@ -1,7 +1,7 @@
 local json = am.options.OUTPUT_FORMAT == "json"
 
-local ok, systemctl = am.plugin.safe_get("systemctl")
-ami_assert(ok, "Failed to load systemctl plugin", EXIT_PLUGIN_LOAD_ERROR)
+local systemctl, err = am.plugin.get("systemctl")
+ami_assert(systemctl, "Failed to load systemctl plugin" .. tostring(err), EXIT_PLUGIN_LOAD_ERROR)
 
 local app_id = am.app.get("id", "unknown")
 local service_name = am.app.get_model("SERVICE_NAME", "unknown")
@@ -35,15 +35,15 @@ end
 local function get_glink_cli_result(exit_code, stdout, stderr)
 	if exit_code ~= 0 then
 		local err_info = stderr:match("error: (.*)")
-		local ok, output = hjson.safe_parse(err_info)
-		if ok then
+		local output, err = hjson.parse(err_info)
+		if not err then
 			return false, output
 		end
 		return false, { message = "unknown (internal error)" }
 	end
 
-	local ok, output = hjson.safe_parse(stdout)
-	if ok then
+	local output, err = hjson.parse(stdout)
+	if not err then
 		return true, output
 	end
 	return false, { message = "unknown (internal error)" }
