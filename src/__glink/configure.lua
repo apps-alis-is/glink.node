@@ -1,8 +1,8 @@
 local user = am.app.get("user")
 ami_assert(type(user) == "string", "User not specified...")
 
-local ok, apt = am.plugin.safe_get("apt")
-if not ok then
+local apt, err = am.plugin.get("apt")
+if err then
 	log_warn("Failed to load apt plugin!")
 end
 
@@ -12,10 +12,10 @@ if not ok then
 end
 
 local DATA_PATH = am.app.get_model("DATA_DIR", "data")
-fs.safe_mkdirp(DATA_PATH)
+fs.mkdirp(DATA_PATH)
 
 local fetch_script_path = "bin/fetch-params.sh"
-local ok, err = net.safe_download_file("https://raw.githubusercontent.com/gemlink/gemlink/master/zcutil/fetch-params.sh", fetch_script_path,
+local ok, err = net.download_file("https://raw.githubusercontent.com/gemlink/gemlink/master/zcutil/fetch-params.sh", fetch_script_path,
 	{ follow_redirects = true })
 if not ok then
 	log_error("Failed to download fetch-params.sh - " .. (err or '-') .. "!")
